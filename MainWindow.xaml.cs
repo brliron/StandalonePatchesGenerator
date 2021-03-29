@@ -120,7 +120,13 @@ namespace StandaloneGeneratorV3
                 runconfig.patches.Add(new RunconfigPatch(patch.Archive));
             runconfig.Save(uiConfigName.Text);
 
-            // TODO: creage games.js
+            var gamesJs = new Dictionary<string, string>()
+            {
+                { game.Id, "../" + game.Id + ".exe" },
+                { game.Id + "_custom", "../" + game.Id + "_custom.exe" },
+            };
+            string jsonGamesJs = JsonSerializer.Serialize(gamesJs, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText("config/games.js", jsonGamesJs);
 
             CreateExe(game.Id, AppContext.BaseDirectory + @"res\Icon_th18.png");
             CreateExe(game.Id + "_custom", null);
