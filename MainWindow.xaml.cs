@@ -59,6 +59,23 @@ namespace StandaloneGeneratorV3
             selectedPatchesList.Add(patch);
         }
 
+        private void CreateExe(string game_id, string icon_path)
+        {
+            File.Copy(AppContext.BaseDirectory + @"res\thcrap\thcrap_loader.exe", game_id + ".exe");
+
+            using (PeResourceUpdater exe = new PeResourceUpdater(game_id + ".exe"))
+            {
+                exe.ReplaceStringTable(new List<string>()
+                {
+                    @"thcrap\bin\",
+                    string.Format(@"thcrap\bin\thcrap_loader.exe {0}.js {1}", this.uiConfigName.Text, game_id),
+                    "thcrap_loader.exe"
+                });
+                if (icon_path != null)
+                    exe.ReplaceIcon(icon_path);
+            }
+        }
+
         private async Task CreateStandalonePatchForGame(Game game)
         {
             logger.LogLine("Generating standalone for " + game.Name + "...");
@@ -103,8 +120,10 @@ namespace StandaloneGeneratorV3
                 runconfig.patches.Add(new RunconfigPatch(patch.Archive));
             runconfig.Save(uiConfigName.Text);
 
-            // TODO: create exe
             // TODO: creage games.js
+
+            CreateExe(game.Id, AppContext.BaseDirectory + @"res\Icon_th18.png");
+            CreateExe(game.Id + "_custom", null);
 
             ThcrapDll.stack_free();
             Environment.CurrentDirectory = "..";
