@@ -1,0 +1,102 @@
+﻿<Window x:Class="StandaloneGeneratorV3.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StandaloneGeneratorV3"
+        mc:Ignorable="d"
+        Title="Thcrap standalone patches generator" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                <Button>Reload games list</Button>
+            </StackPanel>
+            <ListBox Name="uiGamesList">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox IsChecked="{Binding IsSelected}" Content="{Binding Name}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <ScrollViewer Grid.Column="0">
+                <ItemsControl Name="uiRepos">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Expander Header="{Binding Id}">
+                                <ItemsControl ItemsSource="{Binding Patches}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Margin="10,4,0,0" Text="{Binding Id}" Cursor="Hand" TextDecorations="Underline" Foreground="Blue" MouseUp="SelectRepo" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Expander>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <Border Grid.Column="1" BorderThickness="10" Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Row="0" Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Margin="0,0,5,0">Configuration name: </TextBlock>
+                        <TextBox Grid.Column="1" Name="uiConfigName" />
+                    </Grid>
+                    <ScrollViewer Grid.Row="1" Grid.Column="0" Margin="0,5,0,5">
+                        <ListBox Name="uiSelectedPatches">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0}/{1}">
+                                                <Binding Path="Repo.Id" />
+                                                <Binding Path="Id" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </ScrollViewer>
+                    <Button Grid.Row="2" Grid.Column="0" Click="GenerateStandalonePatch">Generate standalone patch</Button>
+                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                        <Button>⯅</Button>
+                        <Button>⯆</Button>
+                        <Button Margin="0,5,0,0">X</Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+        <Border Grid.Row="2" Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" Padding="5">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Margin="0,0,0,5">Log window</TextBlock>
+                <ScrollViewer>
+                    <TextBox Name="uiLogWindow" IsReadOnly="True"></TextBox>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>
