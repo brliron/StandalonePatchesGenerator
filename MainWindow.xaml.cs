@@ -53,10 +53,48 @@ namespace StandaloneGeneratorV3
             });
         }
 
+        private string GeneratePatchNameFromStack()
+        {
+            bool skip = false;
+            string ret = "";
+
+            // If we have any translation patch, skip everything below that
+            if (this.selectedPatchesList.Any((RepoPatch patch) => patch.Id.StartsWith("lang_")))
+                skip = true;
+
+            foreach (var patch in this.selectedPatchesList)
+            {
+                string patch_id;
+                if (patch.Id.StartsWith("lang_"))
+                {
+                    patch_id = patch.Id.Substring(5);
+                    skip = false;
+                }
+                else
+                    patch_id = patch.Id;
+
+                if (!skip)
+                {
+                    if (ret.Length != 0)
+                        ret += "-";
+                    ret += patch_id;
+                }
+            }
+
+            return ret;
+        }
+
         private void SelectRepo(object sender, MouseButtonEventArgs e)
         {
+            bool updatePatchName = false;
+            if (GeneratePatchNameFromStack() == uiConfigName.Text)
+                updatePatchName = true;
+
             var patch = (sender as TextBlock).DataContext as RepoPatch;
             selectedPatchesList.Add(patch);
+
+            if (updatePatchName)
+                uiConfigName.Text = GeneratePatchNameFromStack();
         }
 
         private void CreateExe(string game_id, string icon_path)
