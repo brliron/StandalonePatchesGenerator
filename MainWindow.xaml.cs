@@ -208,7 +208,7 @@ namespace StandaloneGeneratorV3
 
             foreach (Repo repo in this.repoList)
                 repo.UpdateFilter(text);
-            this.uiRepos.ItemsSource = this.repoList.Where((Repo repo) => repo.Id.ToLower().Contains(text) || repo.PatchesFiltered.Count() > 0);
+            this.uiRepos.ItemsSource = this.repoList.Where((Repo repo) => repo.PatchesFiltered.Count() > 0);
         }
     }
 }
