@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -119,7 +121,10 @@ namespace StandaloneGeneratorV3
         {
             logger.LogLine("Generating standalone for " + game.Name + "...");
             Directory.CreateDirectory(game.Id);
-            Environment.CurrentDirectory = game.Id;
+            Directory.CreateDirectory(game.Id + "\\thcrap\\");
+            Environment.CurrentDirectory = game.Id + "\\thcrap\\";
+
+            ZipFile.ExtractToDirectory(@"..\..\thcrap.zip", ".");
 
             foreach (RepoPatch patch in selectedPatchesList)
                 await Task.Run(() => patch.AddToStack());
@@ -167,6 +172,8 @@ namespace StandaloneGeneratorV3
             string jsonGamesJs = JsonSerializer.Serialize(gamesJs, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText("config/games.js", jsonGamesJs);
 
+            Environment.CurrentDirectory = "..";
+
             CreateExe(game.Id, AppContext.BaseDirectory + @"res\Icon_th18.png");
             CreateExe(game.Id + "_custom", null);
 
@@ -181,12 +188,15 @@ namespace StandaloneGeneratorV3
             Directory.CreateDirectory("out");
             Environment.CurrentDirectory = "out";
 
-            // TODO: download thcrap, then unzip it at some point
+            logger.LogLine("Downloading thcrap...");
+            var webClient = new WebClient();
+            await webClient.DownloadFileTaskAsync("https://thcrap.thpatch.net/stable/thcrap.zip", "thcrap.zip");
 
             foreach (Game game in gamesList)
                 if (game.IsSelected)
                     await CreateStandalonePatchForGame(game);
 
+            File.Delete("thcrap.zip");
             Environment.CurrentDirectory = "..";
         }
 
