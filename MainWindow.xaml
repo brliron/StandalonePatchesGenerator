@@ -29,23 +29,35 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <ScrollViewer Grid.Column="0">
-                <ItemsControl Name="uiRepos">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Expander Header="{Binding Id}">
-                                <ItemsControl ItemsSource="{Binding Patches}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Margin="10,4,0,0" Text="{Binding Id}" Cursor="Hand" TextDecorations="Underline" Foreground="Blue" MouseUp="SelectRepo" />
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Expander>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+            <DockPanel>
+                <Grid DockPanel.Dock="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Margin="5,3,5,3">
+                        Filter: 
+                    </TextBlock>
+                    <TextBox Grid.Column="1" Name="uiPatchesListFilter" TextChanged="updatePatchesListFilter" />
+                </Grid>
+                <ScrollViewer Grid.Column="0">
+                    <ItemsControl Name="uiRepos">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Expander Header="{Binding Id}">
+                                    <ItemsControl ItemsSource="{Binding PatchesFiltered}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Margin="10,4,0,0" Text="{Binding Id}" Cursor="Hand" TextDecorations="Underline" Foreground="Blue" MouseUp="SelectRepo" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Expander>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
             <Border Grid.Column="1" BorderThickness="10" Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}">
                 <Grid>
                     <Grid.RowDefinitions>

@@ -27,6 +27,7 @@ namespace StandaloneGeneratorV3
     public partial class MainWindow : Window
     {
         private List<Game> gamesList;
+        List<Repo> repoList;
         private ObservableCollection<RepoPatch> selectedPatchesList;
         private Logger logger;
         public MainWindow()
@@ -47,8 +48,8 @@ namespace StandaloneGeneratorV3
 
             Task.Run(() =>
             {
-                List<Repo> repo_list = Repo.Discovery("https://srv.thpatch.net/");
-                this.Dispatcher.Invoke(() => this.uiRepos.ItemsSource = repo_list);
+                this.repoList = Repo.Discovery("https://srv.thpatch.net/");
+                this.Dispatcher.Invoke(() => this.uiRepos.ItemsSource = repoList);
                 logger.LogLine("Repo discovery finished");
             });
         }
@@ -187,6 +188,16 @@ namespace StandaloneGeneratorV3
                     await CreateStandalonePatchForGame(game);
 
             Environment.CurrentDirectory = "..";
+        }
+
+        private void updatePatchesListFilter(object sender, TextChangedEventArgs e)
+        {
+            var textbox = sender as TextBox;
+            var text = textbox.Text.ToLower();
+
+            foreach (Repo repo in this.repoList)
+                repo.UpdateFilter(text);
+            this.uiRepos.ItemsSource = this.repoList.Where((Repo repo) => repo.Id.ToLower().Contains(text) || repo.PatchesFiltered.Count() > 0);
         }
     }
 }

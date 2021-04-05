@@ -63,6 +63,11 @@ namespace StandaloneGeneratorV3
         public string Id { get; set; }
         public string Title { get; set; }
         public List<RepoPatch> Patches { get; set; }
+        public IEnumerable<RepoPatch> PatchesFiltered { get; set; }
+        public void UpdateFilter(string filter)
+        {
+            this.PatchesFiltered = this.Patches.Where((RepoPatch patch) => patch.Id.ToLower().Contains(filter));
+        }
 
         public static List<Repo> Discovery(string start_url)
         {
