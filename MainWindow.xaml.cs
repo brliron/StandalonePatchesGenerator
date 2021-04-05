@@ -102,9 +102,10 @@ namespace StandaloneGeneratorV3
 
         private void CreateExe(string game_id, string icon_path)
         {
-            File.Copy(AppContext.BaseDirectory + @"res\thcrap\thcrap_loader.exe", game_id + ".exe");
+            string exe_name = game_id + " (" + this.uiConfigName.Text + ").exe";
+            File.Copy(AppContext.BaseDirectory + @"res\thcrap\thcrap_loader.exe", exe_name);
 
-            using (PeResourceUpdater exe = new PeResourceUpdater(game_id + ".exe"))
+            using (PeResourceUpdater exe = new PeResourceUpdater(exe_name))
             {
                 exe.ReplaceStringTable(new List<string>()
                 {
@@ -167,7 +168,7 @@ namespace StandaloneGeneratorV3
             var gamesJs = new Dictionary<string, string>()
             {
                 { game.Id, "../" + game.Id + ".exe" },
-                { game.Id + "_custom", "../" + game.Id + "_custom.exe" },
+                { game.Id + "_custom", "../custom.exe" },
             };
             string jsonGamesJs = JsonSerializer.Serialize(gamesJs, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText("config/games.js", jsonGamesJs);
