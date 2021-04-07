@@ -210,5 +210,36 @@ namespace StandaloneGeneratorV3
                 repo.UpdateFilter(text);
             this.uiRepos.ItemsSource = this.repoList.Where((Repo repo) => repo.PatchesFiltered.Count() > 0);
         }
+
+        private void selectedPatches_MoveUp(object sender, RoutedEventArgs e)
+        {
+            var elem = uiSelectedPatches.SelectedItem as RepoPatch;
+            if (elem == null)
+                return;
+
+            int index = selectedPatchesList.IndexOf(elem);
+            if (index > 0)
+                selectedPatchesList.Move(index, index - 1);
+        }
+
+        private void selectedPatches_MoveDown(object sender, RoutedEventArgs e)
+        {
+            var elem = uiSelectedPatches.SelectedItem as RepoPatch;
+            if (elem == null)
+                return;
+
+            int index = selectedPatchesList.IndexOf(elem);
+            if (index != -1 && index < selectedPatchesList.Count - 1)
+                selectedPatchesList.Move(index, index + 1);
+        }
+
+        private void selectedPatches_Remove(object sender, RoutedEventArgs e)
+        {
+            var elem = uiSelectedPatches.SelectedItem as RepoPatch;
+            if (elem == null)
+                return;
+
+            selectedPatchesList.Remove(elem);
+        }
     }
 }

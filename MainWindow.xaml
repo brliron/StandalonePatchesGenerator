@@ -95,9 +95,9 @@
                     </ScrollViewer>
                     <Button Grid.Row="2" Grid.Column="0" Click="GenerateStandalonePatch">Generate standalone patch</Button>
                     <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
-                        <Button>⯅</Button>
-                        <Button>⯆</Button>
-                        <Button Margin="0,5,0,0">X</Button>
+                        <Button Click="selectedPatches_MoveUp">⯅</Button>
+                        <Button Click="selectedPatches_MoveDown">⯆</Button>
+                        <Button Click="selectedPatches_Remove" Margin="0,5,0,0">X</Button>
                     </StackPanel>
                 </Grid>
             </Border>
