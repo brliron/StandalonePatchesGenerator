@@ -14,12 +14,19 @@
         </Grid.RowDefinitions>
         <DockPanel Grid.Row="0">
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-                <Button>Reload games list</Button>
+                <Button Click="ReloadGamesList">Reload games list</Button>
             </StackPanel>
             <ListBox Name="uiGamesList">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <CheckBox IsChecked="{Binding IsSelected}" Content="{Binding Name}"/>
+                        <CheckBox IsChecked="{Binding IsSelected}">
+                            <CheckBox.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{Binding Image}" Height="16px" />
+                                    <TextBlock Text="{Binding Name}" Margin="5,0,0,0" />
+                                </StackPanel>
+                            </CheckBox.Content>
+                        </CheckBox>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

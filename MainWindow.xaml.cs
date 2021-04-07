@@ -56,6 +56,14 @@ namespace StandaloneGeneratorV3
             });
         }
 
+        private async void ReloadGamesList(object sender, RoutedEventArgs e)
+        {
+            logger.LogLine("Reloading games list from " + GamesList.BaseURL + " ...");
+            gamesList = await GamesList.Reload();
+            this.uiGamesList.ItemsSource = gamesList;
+            logger.LogLine("Games list reloaded and saved to disk!");
+        }
+
         private string GeneratePatchNameFromStack()
         {
             bool skip = false;
@@ -175,7 +183,7 @@ namespace StandaloneGeneratorV3
 
             Environment.CurrentDirectory = "..";
 
-            CreateExe(game.Id, AppContext.BaseDirectory + @"res\Icon_th18.png");
+            CreateExe(game.Id, game.ImagePath);
             CreateExe(game.Id + "_custom", null);
 
             ThcrapDll.stack_free();
