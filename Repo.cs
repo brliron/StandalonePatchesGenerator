@@ -109,6 +109,8 @@ namespace StandaloneGeneratorV3
                 current_patch_ptr += Marshal.SizeOf<ThcrapDll.repo_patch_t>();
                 current_patch = RepoPatch.From_repo_patch_t(this, current_patch_ptr);
             }
+
+            PatchesFiltered = Patches;
         }
         ~Repo()
         {
