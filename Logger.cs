@@ -32,7 +32,7 @@ namespace StandaloneGeneratorV3
             ThcrapDll.log_init(0);
         }
 
-        public void Log(string msg)
+        private void Log(string msg)
         {
             Console.Write(msg);
             if (dispatcher.Thread == Thread.CurrentThread)
@@ -48,10 +48,6 @@ namespace StandaloneGeneratorV3
                     (container.Parent as ScrollViewer).ScrollToBottom();
                 });
             }
-        }
-        public void LogLine(string msg)
-        {
-            this.Log(msg + "\n");
         }
     }
 }

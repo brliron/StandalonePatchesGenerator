@@ -77,8 +77,18 @@ namespace StandaloneGeneratorV3
 
         public static async Task<List<Game>> Reload()
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             WebClient webClient = new WebClient();
-            string mainPage = await webClient.DownloadStringTaskAsync(GamesList.BaseURL);
+            string mainPage;
+            try
+            {
+                mainPage = await webClient.DownloadStringTaskAsync(GamesList.BaseURL);
+            }
+            catch (Exception e)
+            {
+                ThcrapDll.log_print("Could not download games list: " + e.Message + "\n");
+                return null;
+            }
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(mainPage);
 

@@ -50,18 +50,33 @@ namespace StandaloneGeneratorV3
 
             Task.Run(() =>
             {
-                this.repoList = Repo.Discovery("https://srv.thpatch.net/");
+                var repoList = Repo.Discovery("https://srv.thpatch.net/");
+                if (repoList == null)
+                    return;
+                this.repoList = repoList;
                 this.Dispatcher.Invoke(() => this.uiRepos.ItemsSource = repoList);
-                logger.LogLine("Repo discovery finished");
+                ThcrapDll.log_print("Repo discovery finished\n");
             });
         }
 
         private async void ReloadGamesList(object sender, RoutedEventArgs e)
         {
-            logger.LogLine("Reloading games list from " + GamesList.BaseURL + " ...");
-            gamesList = await GamesList.Reload();
+            ThcrapDll.log_print("Reloading games list from " + GamesList.BaseURL + " ...\n");
+            List<Game> gamesList = null;
+            try
+            {
+                gamesList = await GamesList.Reload();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                throw;
+            }
+            if (gamesList == null)
+                return;
+            this.gamesList = gamesList;
             this.uiGamesList.ItemsSource = gamesList;
-            logger.LogLine("Games list reloaded and saved to disk!");
+            ThcrapDll.log_print("Games list reloaded and saved to disk!\n");
         }
 
         private string GeneratePatchNameFromStack()
@@ -128,7 +143,7 @@ namespace StandaloneGeneratorV3
 
         private async Task CreateStandalonePatchForGame(Game game)
         {
-            logger.LogLine("Generating standalone for " + game.Name + "...");
+            ThcrapDll.log_print("Generating standalone for " + game.Name + "...\n");
             Directory.CreateDirectory(game.Id);
             Directory.CreateDirectory(game.Id + "\\thcrap\\");
             Environment.CurrentDirectory = game.Id + "\\thcrap\\";
@@ -151,17 +166,17 @@ namespace StandaloneGeneratorV3
                         case ThcrapUpdateDll.get_status_t.GET_OK:
                             var patch = Marshal.PtrToStructure<ThcrapDll.patch_t>(status.patch);
                             string patch_id = Marshal.PtrToStringAnsi(patch.id);
-                            logger.LogLine(string.Format("[{0}/{1}] {2}/{3}: OK ({4}b)",
+                            ThcrapDll.log_print(string.Format("[{0}/{1}] {2}/{3}: OK ({4}b)\n",
                                 status.nb_files_downloaded, status.nb_files_total,
                                 patch_id, status.fn, status.file_size));
                             break;
                         case ThcrapUpdateDll.get_status_t.GET_CLIENT_ERROR:
                         case ThcrapUpdateDll.get_status_t.GET_SERVER_ERROR:
                         case ThcrapUpdateDll.get_status_t.GET_SYSTEM_ERROR:
-                            logger.LogLine(status.url + " : " + status.error);
+                            ThcrapDll.log_print(status.url + " : " + status.error + "\n");
                             break;
                         case ThcrapUpdateDll.get_status_t.GET_CRC32_ERROR:
-                            logger.LogLine(status.url + " : CRC32 error");
+                            ThcrapDll.log_print(status.url + " : CRC32 error\n");
                             break;
                     }
                     return true;
@@ -188,7 +203,7 @@ namespace StandaloneGeneratorV3
 
             ThcrapDll.stack_free();
             Environment.CurrentDirectory = "..";
-            logger.LogLine("Standalone for " + game.Name + " generated!");
+            ThcrapDll.log_print("Standalone for " + game.Name + " generated!\n");
         }
         private async void GenerateStandalonePatch(object sender, RoutedEventArgs e)
         {
@@ -197,7 +212,7 @@ namespace StandaloneGeneratorV3
             Directory.CreateDirectory("out");
             Environment.CurrentDirectory = "out";
 
-            logger.LogLine("Downloading thcrap...");
+            ThcrapDll.log_print("Downloading thcrap...\n");
             var webClient = new WebClient();
             await webClient.DownloadFileTaskAsync("https://thcrap.thpatch.net/stable/thcrap.zip", "thcrap.zip");
 

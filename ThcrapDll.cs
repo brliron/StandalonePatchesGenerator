@@ -66,6 +66,8 @@ namespace StandaloneGeneratorV3
         public static extern void log_init(int console);
         [DllImport("res\\thcrap\\bin\\thcrap.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void log_set_hook(log_print_cb hookproc, log_nprint_cb hookproc2);
+        [DllImport("res\\thcrap\\bin\\thcrap.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void log_print(string log);
 
         // repo
         [DllImport("res\\thcrap\\bin\\thcrap.dll", CallingConvention = CallingConvention.Cdecl)]
