@@ -130,6 +130,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="res\thcrap\bin\cacert.pem" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -138,6 +139,9 @@
     <Content Include="res\thcrap\bin\jansson.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="res\thcrap\bin\libcrypto-1_1.dll" />
+    <Content Include="res\thcrap\bin\libcurl.dll" />
+    <Content Include="res\thcrap\bin\libssl-1_1.dll" />
     <Content Include="res\thcrap\bin\thcrap.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
