@@ -93,7 +93,7 @@ namespace StandaloneGeneratorV3
             doc.LoadHtml(mainPage);
 
             var domGamesTable = doc.DocumentNode.SelectSingleNode("//table[@class='progtable']");
-            var domGamesList = domGamesTable.SelectNodes("tr").Skip(1);
+            var domGamesList = domGamesTable.SelectNodes("tbody/tr").Skip(1);
 
             var gamesList = new List<Game>();
             foreach (var domGame in domGamesList)
