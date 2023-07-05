@@ -24,8 +24,8 @@ namespace StandaloneGeneratorV3
             ThcrapDll.repo_patch_t patch = Marshal.PtrToStructure<ThcrapDll.repo_patch_t>(ptr);
             RepoPatch outRepo = new RepoPatch();
             outRepo.Repo = repo;
-            outRepo.Id = patch.patch_id;
-            outRepo.Title = patch.title;
+            outRepo.Id = ThcrapHelper.PtrToStringUTF8(patch.patch_id);
+            outRepo.Title = ThcrapHelper.PtrToStringUTF8(patch.title);
             return outRepo;
         }
         IntPtr AllocStructure<T>(T inObj)
@@ -37,11 +37,11 @@ namespace StandaloneGeneratorV3
         public void AddToStack()
         {
             ThcrapDll.patch_desc_t patch_desc;
-            patch_desc.repo_id = this.Repo.Id;
-            patch_desc.patch_id = this.Id;
+            patch_desc.repo_id = ThcrapHelper.StringUTF8ToPtr(this.Repo.Id);
+            patch_desc.patch_id = ThcrapHelper.StringUTF8ToPtr(this.Id);
 
             IntPtr patch_desc_ptr = AllocStructure(patch_desc);
-            ThcrapDll.patch_t patch_info = ThcrapUpdateDll.patch_bootstrap(patch_desc_ptr, this.Repo.repo_ptr);
+            ThcrapDll.patch_t patch_info = ThcrapDll.patch_bootstrap_wrapper(patch_desc_ptr, this.Repo.repo_ptr);
 
             this.Archive = Marshal.PtrToStringAnsi(patch_info.archive);
             ThcrapDll.patch_t patch_full = ThcrapDll.patch_init(this.Archive, IntPtr.Zero, 0);
@@ -74,7 +74,7 @@ namespace StandaloneGeneratorV3
 
         public static List<Repo> Discovery(string start_url)
         {
-            IntPtr repo_list = ThcrapUpdateDll.RepoDiscover(start_url);
+            IntPtr repo_list = ThcrapDll.RepoDiscover_wrapper(start_url);
             if (repo_list == IntPtr.Zero)
                 return new List<Repo>();
 
@@ -96,8 +96,8 @@ namespace StandaloneGeneratorV3
         {
             ThcrapDll.repo_t repo = Marshal.PtrToStructure<ThcrapDll.repo_t>(repo_ptr);
 
-            Id = repo.id;
-            Title = repo.title;
+            Id = ThcrapHelper.PtrToStringUTF8(repo.id);
+            Title = ThcrapHelper.PtrToStringUTF8(repo.title);
             this.repo_ptr = repo_ptr;
 
             Patches = new List<RepoPatch>();

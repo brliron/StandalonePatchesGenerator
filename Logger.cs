@@ -29,7 +29,7 @@ namespace StandaloneGeneratorV3
                 this.Log(chars.ToString());
             };
             ThcrapDll.log_set_hook(thcrap_print, thcrap_nprint);
-            ThcrapDll.log_init(0);
+            ThcrapDll.log_init(false);
         }
 
         private void Log(string msg)

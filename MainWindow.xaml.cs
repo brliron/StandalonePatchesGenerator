@@ -48,9 +48,21 @@ namespace StandaloneGeneratorV3
             selectedPatchesList = new ObservableCollection<RepoPatch>();
             uiSelectedPatches.ItemsSource = selectedPatchesList;
 
+            IsEnabled = false;
+            // thcrap.dll will look for its DLLs in its current directory,
+            // change it so that it can find them.
+            string curDir = Environment.CurrentDirectory;
+            Environment.CurrentDirectory = ThcrapDll.THCRAP_DLL_PATH;
+            ThcrapDll.update_filter_global_wrapper("", IntPtr.Zero);
+            Environment.CurrentDirectory = curDir;
             Task.Run(() =>
             {
+                // Curl will look for bin/cacert.pem, set the current directory
+                // in a way that it will find it.
+                Environment.CurrentDirectory = ThcrapDll.THCRAP_DLL_PATH + "..";
                 var repoList = Repo.Discovery("https://srv.thpatch.net/");
+                this.Dispatcher.Invoke(() => this.IsEnabled = true);
+                Environment.CurrentDirectory = curDir;
                 if (repoList == null)
                     return;
                 this.repoList = repoList;
@@ -153,29 +165,29 @@ namespace StandaloneGeneratorV3
             foreach (RepoPatch patch in selectedPatchesList)
                 await Task.Run(() => patch.AddToStack());
 
-            await Task.Run(() => ThcrapUpdateDll.stack_update(
+            await Task.Run(() => ThcrapDll.stack_update_wrapper(
                 (string fn, IntPtr filter_data) => (fn.Contains('/') == false) || fn.StartsWith(game.Id + "/") ? 1 : 0, IntPtr.Zero,
                 (IntPtr status_, IntPtr param) =>
                 {
-                    var status = Marshal.PtrToStructure<ThcrapUpdateDll.progress_callback_status_t>(status_);
+                    var status = Marshal.PtrToStructure<ThcrapDll.progress_callback_status_t>(status_);
                     switch (status.status)
                     {
-                        case ThcrapUpdateDll.get_status_t.GET_DOWNLOADING:
-                        case ThcrapUpdateDll.get_status_t.GET_CANCELLED:
+                        case ThcrapDll.get_status_t.GET_DOWNLOADING:
+                        case ThcrapDll.get_status_t.GET_CANCELLED:
                             break;
-                        case ThcrapUpdateDll.get_status_t.GET_OK:
+                        case ThcrapDll.get_status_t.GET_OK:
                             var patch = Marshal.PtrToStructure<ThcrapDll.patch_t>(status.patch);
                             string patch_id = Marshal.PtrToStringAnsi(patch.id);
                             ThcrapDll.log_print(string.Format("[{0}/{1}] {2}/{3}: OK ({4}b)\n",
                                 status.nb_files_downloaded, status.nb_files_total,
                                 patch_id, status.fn, status.file_size));
                             break;
-                        case ThcrapUpdateDll.get_status_t.GET_CLIENT_ERROR:
-                        case ThcrapUpdateDll.get_status_t.GET_SERVER_ERROR:
-                        case ThcrapUpdateDll.get_status_t.GET_SYSTEM_ERROR:
+                        case ThcrapDll.get_status_t.GET_CLIENT_ERROR:
+                        case ThcrapDll.get_status_t.GET_SERVER_ERROR:
+                        case ThcrapDll.get_status_t.GET_SYSTEM_ERROR:
                             ThcrapDll.log_print(status.url + " : " + status.error + "\n");
                             break;
-                        case ThcrapUpdateDll.get_status_t.GET_CRC32_ERROR:
+                        case ThcrapDll.get_status_t.GET_CRC32_ERROR:
                             ThcrapDll.log_print(status.url + " : CRC32 error\n");
                             break;
                     }
@@ -222,6 +234,7 @@ namespace StandaloneGeneratorV3
 
             File.Delete("thcrap.zip");
             Environment.CurrentDirectory = "..";
+            ThcrapDll.log_print("Standalone patches generation finished!\n");
         }
 
         private void updatePatchesListFilter(object sender, TextChangedEventArgs e)
